@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct 10 08:43:31 2018
+
+@author: ojp18
+"""
+
+###matrix attempt of FTBS of linear advection
+from numpy import zeros
+from matplotlib import pyplot
+
+u = 0.5  #constant speed
+Nx = 100  #number of x points
+Nt = 100  #number of time steps
+dx = 0.001  #spacial step
+dt = 0.001  #time step  
+c = u*(dt/dx)  #courant number
+phi = zeros((Nx,Nt))  #matrix of x position in row vectors with each new row being a new time step
+ 
+phi[0,0] = 0.1  #initial conditions
+
+
+for n in range (0, Nt-1): #time loop
+    for j in range (1, Nx): #space loop
+        phi[n+1,j]=phi[n,j]-c*(phi[n,j]-phi[n,j-1])
+        
+#print (phi)
+#pyplot.plot(phi[28,:])  #working plot but at specific times
+for i in range(0, 5):
+    pyplot.figure(1)
+    pyplot.plot(phi[:,i])
+    
+#for j in range(0,Nt-1):
+  #  pyplot.figure(2)
+   # pyplot.plot(phi[j:j],Nt)
