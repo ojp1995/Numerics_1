@@ -26,9 +26,9 @@ import numpy as np
 
 # read in all the linear advection schemes, initial conditions and other
 # code associated with this application
-from initialConditions import *
-from advectionSchemes import *
-from diagnostics import *
+from OJPinitialConditions import *
+from OJPadvectionSchemes import *
+from OJPdiagnostics import *
 
 ### The main code is inside a function to avoid global variables    ###
 def main():
@@ -38,8 +38,8 @@ def main():
     # Parameters
     xmin = 0
     xmax = 1
-    nx = 40
-    nt = 40
+    nx = 100
+    nt = 100
     c = 0.1
 
     # Derived parameters
@@ -49,15 +49,15 @@ def main():
     x = np.arange(xmin, xmax, dx)
 
     # Initial conditions
-    phiOld = cosBell(x, 0.1, 0.5)# 0.5, 0.75)
+    phiOld = cosBell(x, 0.25, 0.5)# 0.5, 0.75)
     # Exact solution is the initial condition shifted around the domain
-    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.1, 0.5)#, 0.5, 0.75)
+    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.5)#, 0.5, 0.75)
 
     # Advect the profile using finite difference for all the time steps
     phiFTCS = FTCS(phiOld, c, nt)
     phiFTBS = FTBS(phiOld, c, nt)
     phiCTCS = CTCS(phiOld, c, nt, nx)
-    phiLW = lax_wend(phiOld, c, nt, nx)
+    phiLW = LW(phiOld, c, nt, nx)
     
     phiCTCS_diag = np.zeros((nx))
     for i in range(0,nx):
@@ -66,6 +66,15 @@ def main():
     # Calculate and print out error norms
     print("FTCS l2 error norm = ", l2ErrorNorm(phiFTCS, phiAnalytic))
     print("FTCS linf error norm = ", lInfErrorNorm(phiFTCS, phiAnalytic))
+    
+    print("FTBS l2 error norm = ", l2ErrorNorm(phiFTBS, phiAnalytic))
+    print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
+    
+    print("CTCS l2 error norm = ", l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
+    print("CTCS linf error norm = ", lInfErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
+    
+    print("Lax-Wendroff l2 error norm = ", l2ErrorNorm(phiLW, phiAnalytic))
+    print("Lax-Wendroff linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
 
     # Plot the solutions
     font = {'size'   : 20}
@@ -78,11 +87,10 @@ def main():
              linestyle='--', linewidth=2)
     plt.plot(x, phiFTCS, label='FTCS', color='blue')
     plt.plot(x, phiFTBS, label='FTBS', color='red')
-    plt.plot(x, phiLW[nt-1,:], label='Lax-Wendroff', color="pink")
-#    plt.plot(x, phiCTCS_diag, label='CTCS', color='orange')
-    plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green')
+    plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
+    plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green')  #using second to last time step of t to plot
     plt.axhline(0, linestyle=':', color='black')
-    plt.ylim([-0.2,2])
+    plt.ylim([-0.2,2])  #increased y limiy to show where LW seems to be going wrong
     plt.legend(bbox_to_anchor=(1.15 , 1.1))
     plt.xlabel('$x$')
     #input('press return to save file and continue')

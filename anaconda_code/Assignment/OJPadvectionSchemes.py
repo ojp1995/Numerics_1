@@ -63,8 +63,8 @@ def FTBS(phiOld, c, nt):
 def CTCS(phiOld, c, nt, nx):
     phi = np.zeros((nt,nx))  #making matrix for n time steps and j spacial steps
     
-    phi[0,:] = phiOld.copy()  #initial conditions for first row of matrix
-    phi[1,:] = phiOld.copy()
+    phi[0,:] = phiOld.copy()  #initial conditions for time step t=0
+    phi[1,:] = phiOld.copy()  #initialconditions for time step t=1 
 #    
 #    for j in range(1,nx-1):
 #        phi[1:j] = phi[0:j] - (0.5*c)*(phi[0:j+1]%nx - phi[0:(j-1)%nx])
@@ -76,33 +76,66 @@ def CTCS(phiOld, c, nt, nx):
             
     return phi
     
+#
+#def lax_wend(phiOld, c, nt, nx):
+#    
+#    phi = np.zeros((nx,nt))  #making matrix for n time steps and j spacial steps
+#    
+#    phi[0,:] = phiOld.copy()
+#    
+#    phijplus = np.zeros(nx)  #creating the half time step vectors
+#    phijminus = np.zeros(nx)
+#    
+#    for n in range (0,nx-1):
+#        for j in range (0,nx-1):
+#            phijplus[j] = 0.5*(1+c)*phi[n,j]%nx + 0.5*(1-c)*phi[n,j+1]%nx  #for each spacial step computing new phi j+1/2, j-1/2
+#            phijminus[j] = 0.5*(1+c)*phi[n,j-1]%nx + 0.5*(1-c)*phi[n,j]%nx
+#            
+#            phi[n+1,j] = -c*(phijplus[j]%nx-phijminus[j]%nx)+phi[n,j]%nx  #each row on the matrix computes for each timestep
+#    print(phi[:,:])        
+#    return phi
 
-def lax_wend(phiOld, c, nt, nx):
+
+#def LW(phiOld, c, nt, nx):
+#    phi = phiOld.copy()
+#    phijplus = phiOld.copy()
+#    phijminus = phiOld.copy()
+#    for n in range (nt):
+#        for j in range  (nx):
+#            phijplus[j] = 0.5*(1+c)*phiOld[j] + 0.5*(1-c)*phi[(j+1)%nx]
+#            phijminus[j] = 0.5*(1+c)*phiOld[(j-1)%nx] + 0.5*(1-c)*phiOld[j]
+#            
+#            phi[j] = -c*(phijplus[j]+phijminus[j]) + phiOld[j]
+#            
+#        phiOld = phi.copy()
+#    
+#        
+#     
+#  
+#            
+#    return phi
+#    
     
-    phi = np.zeros((nx,nt))
     
-    phi[0,:] = phiOld.copy()
+
     
-    phijplus = np.zeros(nx)
-    phijminus = np.zeros(nx)
-    
-    for n in range (0,nx-1):
-        for j in range (0,nx-1):
-            phijplus[j] = 0.5*(1+c)*phi[n,j]%nx + 0.5*(1-c)*phi[n,j+1]%nx
-            phijminus[j] = 0.5*(1+c)*phi[n,j-1]%nx + 0.5*(1-c)*phi[n,j]%nx
-            
-            phi[n+1,j] = -c*(phijplus[j]%nx-phijminus[j]%nx)+phi[n,j]%nx
-            
-    return phi
-    
-    
-    
-    
-    
+def LW(phiOld, c, nt, nx):
+    phi = phiOld.copy()
+    phijplus=phiOld.copy()
+    phijminus=phiOld.copy()
+   
+    for n in range(nt):
         
+        
+        for j in range(nx):
+            phijplus[j] = 0.5*(1+c)*phiOld[j] +0.5*(1-c)*phiOld[(j+1)%nx]
+            phijminus[j]= 0.5*(1+c)*phiOld[(j-1)%nx] +0.5*(1-c)*phiOld[j]
+            phi[j]=phiOld[j]-c*(phijplus[j]-phijminus[j])
+              
+       
+        phiOld = phi.copy()
     
-    
-    
+    return phi
     
     
     
