@@ -1,0 +1,55 @@
+The repository name is actually Numerics_1. anaconda_code/Assignment is the directory that I guess you want me to look at.
+
+Good commit messages and plenty of commits.
+
+You should have a .gitignore file so that you don't add binary files such as .ipynb and .pdf files to the repository
+
+Do not leave my teaching comments:
+# If you are using Python 2.7 rather than Python 3, import various
+# functions from Python 3 such as to use real number division
+# rather than integer division. ie 3/2  = 1.5  rather than 3/2 = 1
+#from __future__ import absolute_import, division, print_function
+at the top of files
+
+Delete and remove old code and old files from the repository that is not needed to create the results that you will put into the report. The point of using a version control system such as git is that you can always get back old code.
+
+No need to rename my files with your initials in front. Use the same names. You can always see my original versions as you are using a version control system.
+
+In the plot produced by OJPlinearAdvect.py, move the legend box so that it is visible.
+
+You have a comment:
+# Plot the solutions, all on one although I feel it would be better to do individual plots
+You lay it out how you think best.
+
+Indent 4 spaces at a time, not 8
+
+File FTBS_matrix_advection should be called FTBS_matrix_advection.py.
+I am not sure what it is supposed to do but the file contains loads of global variables - not a good way to code.
+
+File FTBS_matrix_advection contains the line
+for n in range (0, Nt-1):
+Why only Nt-1 time steps?
+
+Functions should always have docstrings describing what they do.
+
+Follow the guidelines at 
+https://www.dropbox.com/s/yba7pj7woyvv7hs/goodCode.pdf?dl=1
+
+Remove global variables from file 
+FTBS_advection.py
+Look again at my original code to see how to do it without global variables.
+
+What boundary conditions are you using? Not sure why you have:
+Nx=1000
+dx = 1/(Nx-1)  #spacial step
+For periodic BCs, you should have:
+dx = 1/Nx
+assuming that you do not have any duplicate points.
+
+I provided you with working code for FTCS. No need to re-write it (with global variables).
+
+Not sure what you mean by:
+phiOld[j]%nx
+
+In CTCS, you could call FTCS for one time step rather than re-imlementing it
+
