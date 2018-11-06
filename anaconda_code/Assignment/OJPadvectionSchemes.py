@@ -1,11 +1,6 @@
 # Numerical schemes for simulating linear advection for outer code
 # linearAdvect.py 
 
-# If you are using Python 2.7 rather than Python 3, import various
-# functions from Python 3 such as to use real number division
-# rather than integer division. ie 3/2  = 1.5  rather than 3/2 = 1
-#from __future__ import absolute_import, division, print_function
-
 # The numpy package for numerical functions and pi
 import numpy as np
 
@@ -53,7 +48,7 @@ def CTCS(phiOld, c, nt, nx):
     phi = np.zeros((nt,nx))  #making matrix for n time steps and j spacial steps
     
     phi[0,:] = phiOld.copy()  #initial conditions for time step t=0
-    phi[1,:] = phiOld.copy()  #initialconditions for time step t=1 
+    phi[1,:] = FTCS(phi[0:1], c, nt)  #initial conditions for t=1 using FTCS  
 #     
     
 ###using FTCS to get second time step    
