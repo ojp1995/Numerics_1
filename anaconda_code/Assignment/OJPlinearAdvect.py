@@ -36,7 +36,7 @@ def main():
         x = np.arange(xmin, xmax, dx)
         
         # Initial conditions
-        phiOld = cosBell(x, 0.25, 0.75)# 0.5, 0.75)
+        phiOld = cosBell(x, 0.25, 0.75)
         # Exact solution is the initial condition shifted around the domain
         phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)#, 0.5, 0.75)
         
