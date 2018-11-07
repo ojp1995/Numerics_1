@@ -25,9 +25,9 @@ def main():
     # Parameters
     xmin = 0
     xmax = 1
-    nx = 40
-    nt = 40
-    c = 0.1
+    nx = 20
+    nt = 20
+    c = 0.4
         
     # Derived parameters
     dx = (xmax - xmin)/nx
@@ -36,9 +36,9 @@ def main():
     x = np.arange(xmin, xmax, dx)
     
     # Initial conditions
-    phiOld = cosBell(x, 0.25, 0.75)
+    phiOld = squareWave(x, 0.25, 0.75)
     # Exact solution is the initial condition shifted around the domain
-    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)#, 0.5, 0.75)
+    phiAnalytic = squareWave((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)#, 0.5, 0.75)
     
     # Advect the profile using finite difference for all the time steps
     phiFTCS = FTCS(phiOld, c, nt)
@@ -52,10 +52,7 @@ def main():
     l2CTCS, errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
     l2LW, errorLW = l2ErrorNorm(phiLW, phiAnalytic)
     
-    
-    
-   
-    
+#    
     
     
     ##plot for FTCS
@@ -67,13 +64,21 @@ def main():
     plt.plot(x, phiOld, label='Initial', color='black')
     plt.plot(x, phiAnalytic, label='Analytic', color='black', 
              linestyle='--', linewidth=2)
-    plt.plot(x, phiFTCS, label='FTCS', color='blue')
+    plt.plot(x, phiFTBS, label='FTBS', color='red')
+    plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green') #using second to last time step of t to plot
+    plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
     plt.axhline(0, linestyle=':', color='black')
     plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
     plt.legend()
     plt.xlabel('$x$')
     print("FTCS l2 error norm = ", l2FTCS)
     print("FTCS linf error norm = ", lInfErrorNorm(phiFTCS, phiAnalytic))
+    ##error plot
+    plt.figure(5)
+    plt.clf()
+    plt.ion()
+    plt.plot(x, errorFTCS)
+    plt.title('error plot of FTCS method')
     
     
     
