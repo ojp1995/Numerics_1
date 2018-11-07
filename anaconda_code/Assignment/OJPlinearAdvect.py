@@ -43,6 +43,7 @@ def main():
     # Advect the profile using finite difference for all the time steps
     phiFTCS = FTCS(phiOld, c, nt)
     phiFTBS = FTBS(phiOld, c, nt)
+    #phiFTBS = FTBS(phiOld, c, nt)
     phiCTCS = CTCS(phiOld, c, nt, nx)
     phiLW = LW(phiOld, c, nt, nx)
     
@@ -63,7 +64,7 @@ def main():
     
     font = {'size'   : 20}
     plt.rc('font', **font)
-    plt.figure()
+    plt.figure(1,figsize=(10,7))
     plt.clf()
     plt.ion()
     plt.plot(x, phiOld, label='Initial', color='black')
@@ -75,8 +76,11 @@ def main():
     plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
     plt.axhline(0, linestyle=':', color='black')
     plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
-    plt.legend(bbox_to_anchor=(1.15 , 1.1))
+    plt.legend()
     plt.xlabel('$x$')
+    
+#    plt.figure(2)
+#    plt.plot(nt, errorFTBS)
     #input('press return to save file and continue')
     #plt.savefig('plots/mixed_different_coeff_2_initial_conditions.pdf')
             

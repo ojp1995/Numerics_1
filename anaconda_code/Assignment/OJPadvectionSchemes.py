@@ -22,6 +22,7 @@ def FTCS(phiOld, c, nt):
         
         # update arrays for next time-step
         phiOld = phi.copy()
+        
 
     return phi
 
@@ -29,6 +30,7 @@ def FTCS(phiOld, c, nt):
     
 def FTBS(phiOld, c, nt):
     nx=len(phiOld)
+    error = np.zeros(nt)
     
     phi = phiOld.copy()
     
@@ -36,9 +38,12 @@ def FTBS(phiOld, c, nt):
         for j in range(nx):
             phi[j] = phiOld[j] - c*(phiOld[j]%nx - phiOld[(j-1)%nx])
             
-        phiOld = phi.copy()
             
-    return phi
+        phiOld = phi.copy()
+#    error[it] = phiOld - phiAnalytic[it]
+            
+    return (phi, error)
+
     
 
 
