@@ -47,8 +47,10 @@ def main():
     phiLW = LW(phiOld, c, nt, nx)
     
     
-    
-    # Calculate and print out error norms
+    l2FTCS, errorFTCS = l2ErrorNorm(phiFTCS, phiAnalytic)
+    l2FTBS, errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
+    l2CTCS, errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
+    l2LW, errorLW = l2ErrorNorm(phiLW, phiAnalytic)
     
     
     
@@ -70,7 +72,7 @@ def main():
     plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
     plt.legend()
     plt.xlabel('$x$')
-    print("FTCS l2 error norm = ", l2ErrorNorm(phiFTCS, phiAnalytic))
+    print("FTCS l2 error norm = ", l2FTCS)
     print("FTCS linf error norm = ", lInfErrorNorm(phiFTCS, phiAnalytic))
     
     
@@ -87,7 +89,7 @@ def main():
     plt.ylim([-0.2,1.2])  #increased y 
     plt.legend()
     plt.xlabel('$x$')
-    print("FTBS l2 error norm = ", l2ErrorNorm(phiFTBS, phiAnalytic))
+    print("FTBS l2 error norm = ", l2FTBS)
     print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
     
     
@@ -103,7 +105,7 @@ def main():
     plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
     plt.legend()
     plt.xlabel('$x$')
-    print("CTCS l2 error norm = ", l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
+    print("CTCS l2 error norm = ", l2CTCS)
     print("CTCS linf error norm = ", lInfErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
     
     ##plot for LW
@@ -119,7 +121,7 @@ def main():
     plt.legend()
     plt.xlabel('$x$')
     
-    print("Lax-Wendroff l2 error norm = ", l2ErrorNorm(phiLW, phiAnalytic))
+    print("Lax-Wendroff l2 error norm = ", l2LW)
     print("Lax-Wendroff linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
     
 #    plt.figure(2)

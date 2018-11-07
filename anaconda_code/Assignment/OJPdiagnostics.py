@@ -11,7 +11,7 @@ def l2ErrorNorm(phi, phiExact):
     phiError = phi - phiExact
     l2 = np.sqrt(sum(phiError**2)/sum(phiExact**2))
 
-    return l2
+    return l2, phiError
 
 
 def lInfErrorNorm(phi, phiExact):
