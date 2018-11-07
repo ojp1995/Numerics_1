@@ -30,7 +30,6 @@ def FTCS(phiOld, c, nt):
     
 def FTBS(phiOld, c, nt):
     nx=len(phiOld)
-    error = np.zeros(nt)
     
     phi = phiOld.copy()
     
@@ -40,9 +39,8 @@ def FTBS(phiOld, c, nt):
             
             
         phiOld = phi.copy()
-#    error[it] = phiOld - phiAnalytic[it]
             
-    return (phi, error)
+    return phi
 
     
 

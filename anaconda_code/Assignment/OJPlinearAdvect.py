@@ -25,8 +25,8 @@ def main():
     # Parameters
     xmin = 0
     xmax = 1
-    nx = 100
-    nt = 100
+    nx = 40
+    nt = 40
     c = 0.1
         
     # Derived parameters
@@ -43,25 +43,20 @@ def main():
     # Advect the profile using finite difference for all the time steps
     phiFTCS = FTCS(phiOld, c, nt)
     phiFTBS = FTBS(phiOld, c, nt)
-    #phiFTBS = FTBS(phiOld, c, nt)
     phiCTCS = CTCS(phiOld, c, nt, nx)
     phiLW = LW(phiOld, c, nt, nx)
     
     
     
     # Calculate and print out error norms
-    print("FTCS l2 error norm = ", l2ErrorNorm(phiFTCS, phiAnalytic))
-    print("FTCS linf error norm = ", lInfErrorNorm(phiFTCS, phiAnalytic))
     
-    print("FTBS l2 error norm = ", l2ErrorNorm(phiFTBS, phiAnalytic))
-    print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
     
-    print("CTCS l2 error norm = ", l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
-    print("CTCS linf error norm = ", lInfErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
     
-    print("Lax-Wendroff l2 error norm = ", l2ErrorNorm(phiLW, phiAnalytic))
-    print("Lax-Wendroff linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
+   
     
+    
+    
+    ##plot for FTCS
     font = {'size'   : 20}
     plt.rc('font', **font)
     plt.figure(1,figsize=(10,7))
@@ -71,13 +66,61 @@ def main():
     plt.plot(x, phiAnalytic, label='Analytic', color='black', 
              linestyle='--', linewidth=2)
     plt.plot(x, phiFTCS, label='FTCS', color='blue')
+    plt.axhline(0, linestyle=':', color='black')
+    plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
+    plt.legend()
+    plt.xlabel('$x$')
+    print("FTCS l2 error norm = ", l2ErrorNorm(phiFTCS, phiAnalytic))
+    print("FTCS linf error norm = ", lInfErrorNorm(phiFTCS, phiAnalytic))
+    
+    
+    
+    ##plot for FTBS
+    plt.figure(2,figsize=(10,7))
+    plt.clf()
+    plt.ion()
+    plt.plot(x, phiOld, label='Initial', color='black')
+    plt.plot(x, phiAnalytic, label='Analytic', color='black', 
+             linestyle='--', linewidth=2)
     plt.plot(x, phiFTBS, label='FTBS', color='red')
-    plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green')  #using second to last time step of t to plot
+    plt.axhline(0, linestyle=':', color='black')
+    plt.ylim([-0.2,1.2])  #increased y 
+    plt.legend()
+    plt.xlabel('$x$')
+    print("FTBS l2 error norm = ", l2ErrorNorm(phiFTBS, phiAnalytic))
+    print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
+    
+    
+    ##plot for CTCS
+    plt.figure(3,figsize=(10,7))
+    plt.clf()
+    plt.ion()
+    plt.plot(x, phiOld, label='Initial', color='black')
+    plt.plot(x, phiAnalytic, label='Analytic', color='black', 
+             linestyle='--', linewidth=2)
+    plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green') #using second to last time step of t to plot
+    plt.axhline(0, linestyle=':', color='black')
+    plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
+    plt.legend()
+    plt.xlabel('$x$')
+    print("CTCS l2 error norm = ", l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
+    print("CTCS linf error norm = ", lInfErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
+    
+    ##plot for LW
+    plt.figure(4,figsize=(10,7))
+    plt.clf()
+    plt.ion()
+    plt.plot(x, phiOld, label='Initial', color='black')
+    plt.plot(x, phiAnalytic, label='Analytic', color='black', 
+             linestyle='--', linewidth=2)
     plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
     plt.axhline(0, linestyle=':', color='black')
     plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
     plt.legend()
     plt.xlabel('$x$')
+    
+    print("Lax-Wendroff l2 error norm = ", l2ErrorNorm(phiLW, phiAnalytic))
+    print("Lax-Wendroff linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
     
 #    plt.figure(2)
 #    plt.plot(nt, errorFTBS)
