@@ -38,7 +38,7 @@ def main():
     # Initial conditions
     phiOld = cosBell(x, 0.25, 0.75)
     # Exact solution is the initial condition shifted around the domain
-    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.4, 0.6)#, 0.5, 0.75)
+    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)#, 0.5, 0.75)
     
     # Advect the profile using finite difference for all the time steps
     phiFTCS = FTCS(phiOld, c, nt)
@@ -193,7 +193,7 @@ def convergence_exp():
     plt.legend()
     
     
-    
+convergence_exp()
     
         
         
@@ -202,6 +202,76 @@ def convergence_exp():
     
         
 convergence_exp()
+c_list = (-0.4, 0.1, 0.4, 0.9, 1, 1.1)
+print(c_list)
+def c_exp():
+    
+    # Parameters
+    xmin = 0
+    xmax = 1
+    nx = 60
+    nt = 60
+        
+    # Derived parameters
+    dx = (xmax - xmin)/nx
+    
+    # spatial points for plotting and for defining initial conditions
+    x = np.arange(xmin, xmax, dx)
+    
+    for i in range(len(c_list)):
+        
+        c = c_list[i]
+    
+        # Initial conditions
+        phiOld = cosBell(x, 0.25, 0.75)
+        # Exact solution is the initial condition shifted around the domain
+        phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)
+        
+        # Advect the profile using finite difference for all the time steps
+        phiFTCS = FTCS(phiOld, c, nt)
+        phiFTBS = FTBS(phiOld, c, nt)
+        phiCTCS = CTCS(phiOld, c, nt, nx)
+        phiLW = LW(phiOld, c, nt, nx)
+        
+        
+        l2FTCS, errorFTCS = l2ErrorNorm(phiFTCS, phiAnalytic)
+        l2FTBS, errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
+        l2CTCS, errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
+        l2LW, errorLW = l2ErrorNorm(phiLW, phiAnalytic)
+        
+        font = {'size'   : 20}
+        plt.rc('font', **font)
+        plt.figure(figsize=(10,7))
+        plt.clf()
+        plt.ion()
+        plt.plot(x, phiOld, label='Initial', color='black')
+        plt.plot(x, phiAnalytic, label='Analytic', color='black', 
+                 linestyle='--', linewidth=2)
+        plt.plot(x, phiFTBS, label='FTBS', color='red')
+        plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green') #using second to last time step of t to plot
+        plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
+        plt.axhline(0, linestyle=':', color='black')
+        plt.ylim([-0.2,1.4])  #increased y limiy to show where LW seems to be going wrong
+        plt.legend()
+        plt.xlabel('$x$')
+        plt.title('Linear Advection where c=%f'%c)
+        
+        print("FTBS l2 error norm = ", l2FTBS)
+        print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
+        
+        
+        print("CTCS l2 error norm = ", l2CTCS)
+        print("CSCS linf error norm = ", lInfErrorNorm(phiCTCS, phiAnalytic))
+        
+        
+        print("LW l2 error norm = ", l2LW)
+        print("LW linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
+       
+    
+        
+c_exp()
+        
+
         
         
         
