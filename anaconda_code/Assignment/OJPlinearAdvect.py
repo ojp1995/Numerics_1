@@ -44,7 +44,7 @@ def main():
     # Advect the profile using finite difference for all the time steps
     phiFTCS = FTCS(phiOld, c, nt)
     phiFTBS = FTBS(phiOld, c, nt)
-    phiCTCS = CTCS(phiOld, c, nt, nx)
+    phiCTCS = CTCS(phiOld, c, nt)
     phiLW = LW(phiOld, c, nt, nx)
     
     
@@ -89,85 +89,34 @@ def main():
     plt.plot(x, errorFTCS)
     plt.title('error plot of FTCS method')
     
-    
-    
-#    ##plot for FTBS
-#    plt.figure(2,figsize=(10,7))
-#    plt.clf()
-#    plt.ion()
-#    plt.plot(x, phiOld, label='Initial', color='black')
-#    plt.plot(x, phiAnalytic, label='Analytic', color='black', 
-#             linestyle='--', linewidth=2)
-#    plt.plot(x, phiFTBS, label='FTBS', color='red')
-#    plt.axhline(0, linestyle=':', color='black')
-#    plt.ylim([-0.2,1.2])  #increased y 
-#    plt.legend()
-#    plt.xlabel('$x$')
-#    print("FTBS l2 error norm = ", l2FTBS)
-#    print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
-#    
-#    
-#    ##plot for CTCS
-#    plt.figure(3,figsize=(10,7))
-#    plt.clf()
-#    plt.ion()
-#    plt.plot(x, phiOld, label='Initial', color='black')
-#    plt.plot(x, phiAnalytic, label='Analytic', color='black', 
-#             linestyle='--', linewidth=2)
-#    plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green') #using second to last time step of t to plot
-#    plt.axhline(0, linestyle=':', color='black')
-#    plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
-#    plt.legend()
-#    plt.xlabel('$x$')
-#    print("CTCS l2 error norm = ", l2CTCS)
-#    print("CTCS linf error norm = ", lInfErrorNorm(phiCTCS[nt-1,:], phiAnalytic))
-#    
-#    ##plot for LW
-#    plt.figure(4,figsize=(10,7))
-#    plt.clf()
-#    plt.ion()
-#    plt.plot(x, phiOld, label='Initial', color='black')
-#    plt.plot(x, phiAnalytic, label='Analytic', color='black', 
-#             linestyle='--', linewidth=2)
-#    plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
-#    plt.axhline(0, linestyle=':', color='black')
-#    plt.ylim([-0.2,1.2])  #increased y limiy to show where LW seems to be going wrong
-#    plt.legend()
-#    plt.xlabel('$x$')
-#    
-#    print("Lax-Wendroff l2 error norm = ", l2LW)
-#    print("Lax-Wendroff linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
-#    
-##    plt.figure(2)
-##    plt.plot(nt, errorFTBS)
-#    #input('press return to save file and continue')
-#    #plt.savefig('plots/mixed_different_coeff_2_initial_conditions.pdf')
 #            
 ####Run the function main defined in this file                      ###
             
 main()
 
 def convergence_exp():
+    n_exp_size = 30
     u = 0.4  #courant number constant
     xmin = 0
     xmax = 1
-    l2FTBS_dx_err = np.zeros(10)
-    l2CTCS_dx_err = np.zeros(10)
-    l2LW_dx_err = np.zeros(10)
-    errorFTBS = np.zeros(10)
-    errorCTCS = np.zeros(10)
-    errorLW = np.zeros(10)
-    dx_it = np.zeros(10)
+    l2FTBS_dx_err = np.zeros(n_exp_size)
+    l2CTCS_dx_err = np.zeros(n_exp_size)
+    l2LW_dx_err = np.zeros(n_exp_size)
+    errorFTBS = np.zeros(n_exp_size)
+    errorCTCS = np.zeros(n_exp_size)
+    errorLW = np.zeros(n_exp_size)
+    dx_it = np.zeros(n_exp_size)
     
-    for i in range(0,10):
-        print(i)
+    delta_x = np.zeros(n_exp_size)
+    delta_x2 = np.zeros(n_exp_size)
+    
+    for i in range(0,n_exp_size):
         nx = i*10 + 10
-        print(nx)
         dx = (xmax - xmin)/nx
         nt = nx ##keeping overall time constant
         dx_it[i] = dx
         c = 0.4*(nx/nt)
-        print(c)
+     
         
         # spatial points for plotting and for defining initial conditions
         x = np.arange(xmin, xmax, dx)
@@ -175,12 +124,16 @@ def convergence_exp():
         # Initial conditions
         phiOld = cosBell(x, 0.25, 0.75)
         # Exact solution is the initial condition shifted around the domain
-        phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.4, 0.6)#, 0.5, 0.75)
+        phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)#, 0.5, 0.75)
         
         # Advect the profile using finite difference for all the time steps
         phiFTBS = FTBS(phiOld, c, nt)
-        phiCTCS = CTCS(phiOld, c, nt, nx)
+        phiCTCS = CTCS(phiOld, c, nt)
         phiLW = LW(phiOld, c, nt, nx)
+        
+        ##create dx anmd dx^2 lines
+        delta_x[i] = dx
+        delta_x2[i] = dx**2
         
         
         l2FTBS_dx_err[i], errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
@@ -192,10 +145,12 @@ def convergence_exp():
     plt.loglog(dx_it, l2FTBS_dx_err, label='FTBS', color = 'red')
     plt.loglog(dx_it, l2CTCS_dx_err, label='CTCS', color = 'green')
     plt.loglog(dx_it, l2LW_dx_err, label = 'LW', color = 'orange')
+#    plt.loglog(dx_it, dx, label='$\delta$x', linestyle=':', color = 'black')
+#    plt.loglog(dx_it, dx, label = '$\delat x^{2}$', linestyle = ':', color = 'blue')
     plt.ylabel('$l_{2}$ error norm')
-    plt.xlabel('$n_{x}$')
+    plt.xlabel('Number of spacial steps')
     plt.legend()
-    plt.title('Loglog plot of error norms as number of pacial points increase')
+    plt.title('Loglog plot of error norms as number of spacial points increase')
     
     
 convergence_exp()
@@ -236,7 +191,7 @@ def c_exp():
         # Advect the profile using finite difference for all the time steps
         phiFTCS = FTCS(phiOld, c, nt)
         phiFTBS = FTBS(phiOld, c, nt)
-        phiCTCS = CTCS(phiOld, c, nt, nx)
+        phiCTCS = CTCS(phiOld, c, nt)
         phiLW = LW(phiOld, c, nt, nx)
         
         
