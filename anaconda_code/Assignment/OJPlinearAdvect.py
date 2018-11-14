@@ -133,20 +133,19 @@ def convergence_exp():
         
         ##create dx anmd dx^2 lines
         delta_x[i] = dx
-        delta_x2[i] = dx**2
-        
+        delta_x2[i] = dx**2       
         
         l2FTBS_dx_err[i], errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
         l2CTCS_dx_err[i], errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
         l2LW_dx_err[i], errorLW = l2ErrorNorm(phiLW, phiAnalytic)
     
-    dxsquared = dx**2
-    plt.figure()
+    plt.figure(7, figsize=(10,7))
+    plt.clf()
     plt.loglog(dx_it, l2FTBS_dx_err, label='FTBS', color = 'red')
     plt.loglog(dx_it, l2CTCS_dx_err, label='CTCS', color = 'green')
     plt.loglog(dx_it, l2LW_dx_err, label = 'LW', color = 'orange')
-#    plt.loglog(dx_it, dx, label='$\delta$x', linestyle=':', color = 'black')
-#    plt.loglog(dx_it, dx, label = '$\delat x^{2}$', linestyle = ':', color = 'blue')
+    plt.loglog(dx_it, delta_x, label='$\Delta x$', linestyle=':', color = 'black')
+    plt.loglog(dx_it, delta_x2, label = '$\Delta x^{2}$', linestyle = ':', color = 'blue')
     plt.ylabel('$l_{2}$ error norm')
     plt.xlabel('Number of spacial steps')
     plt.legend()
@@ -162,7 +161,7 @@ convergence_exp()
     
         
 
-nx_list = (10, 40, 80, 100, 120)
+nx_list = (40, 80, 100, 120)
 def c_exp():
     
     # Parameters
@@ -202,7 +201,7 @@ def c_exp():
         
         font = {'size'   : 20}
         plt.rc('font', **font)
-        plt.figure(figsize=(10,7))
+        plt.figure(i+2, figsize=(10,7))
         plt.clf()
         plt.ion()
         plt.plot(x, phiOld, label='Initial', color='black')
@@ -213,7 +212,7 @@ def c_exp():
         plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
         plt.axhline(0, linestyle=':', color='black')
         plt.ylim([-0.2,1.4])  #increased y limiy to show where LW seems to be going wrong
-        plt.legend()
+        plt.legend(bbox_to_anchor=(0.4,1))
         plt.xlabel('$x$')
         plt.title('Linear Advection where c=%f'%c)
         
