@@ -27,7 +27,8 @@ def main():
     xmax = 1
     nx = 60
     nt = 60
-    c = 0.4
+    u=0.4  ##wind speed, keeping constant
+    c = u*(nx/nt)
         
     # Derived parameters
     dx = (xmax - xmin)/nx
@@ -55,7 +56,6 @@ def main():
 #    
     
     
-    ##plot for FTCS
     font = {'size'   : 20}
     plt.rc('font', **font)
     plt.figure(1,figsize=(10,7))
@@ -148,7 +148,7 @@ def main():
 main()
 
 def convergence_exp():
-    c = 0.4  #courant number constant
+    u = 0.4  #courant number constant
     xmin = 0
     xmax = 1
     l2FTBS_dx_err = np.zeros(10)
@@ -159,12 +159,15 @@ def convergence_exp():
     errorLW = np.zeros(10)
     dx_it = np.zeros(10)
     
-    for i in range(1,10):
+    for i in range(0,10):
         print(i)
-        nx = i*10 
+        nx = i*10 + 10
+        print(nx)
         dx = (xmax - xmin)/nx
         nt = nx ##keeping overall time constant
         dx_it[i] = dx
+        c = 0.4*(nx/nt)
+        print(c)
         
         # spatial points for plotting and for defining initial conditions
         x = np.arange(xmin, xmax, dx)
@@ -189,8 +192,10 @@ def convergence_exp():
     plt.loglog(dx_it, l2FTBS_dx_err, label='FTBS', color = 'red')
     plt.loglog(dx_it, l2CTCS_dx_err, label='CTCS', color = 'green')
     plt.loglog(dx_it, l2LW_dx_err, label = 'LW', color = 'orange')
-#    plt.loglog(dx, dxsquared, label = 'dx^2', linestyle=':', color='black')
+    plt.ylabel('$l_{2}$ error norm')
+    plt.xlabel('$n_{x}$')
     plt.legend()
+    plt.title('Loglog plot of error norms as number of pacial points increase')
     
     
 convergence_exp()
@@ -201,26 +206,27 @@ convergence_exp()
         
     
         
-convergence_exp()
-c_list = (-0.4, 0.1, 0.4, 0.9, 1, 1.1)
-print(c_list)
+
+nx_list = (10, 40, 80, 100, 120)
 def c_exp():
     
     # Parameters
     xmin = 0
     xmax = 1
-    nx = 60
-    nt = 60
-        
-    # Derived parameters
-    dx = (xmax - xmin)/nx
     
-    # spatial points for plotting and for defining initial conditions
-    x = np.arange(xmin, xmax, dx)
     
-    for i in range(len(c_list)):
+    for i in range(len(nx_list)):
         
-        c = c_list[i]
+        
+        nx = nx_list[i]
+        nt = 40
+        
+        u=0.4
+        dx = (xmax - xmin)/nx
+        c = u*(nx/nt)
+        print(c)
+        
+        x = np.arange(xmin, xmax, dx)
     
         # Initial conditions
         phiOld = cosBell(x, 0.25, 0.75)
