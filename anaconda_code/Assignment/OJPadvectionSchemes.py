@@ -35,7 +35,7 @@ def FTBS(phiOld, c, nt):
     
     for it in range(nt):
         for j in range(nx):
-            phi[j] = phiOld[j] - c*(phiOld[j]%nx - phiOld[(j-1)%nx])
+            phi[j] = phiOld[j] - c*(phiOld[j] - phiOld[(j-1)%nx])
             
             
         phiOld = phi.copy()
@@ -47,16 +47,17 @@ def FTBS(phiOld, c, nt):
 
         
 
-def CTCS(phiOld, c, nt, nx):
+def CTCS(phiOld, c, nt):
+    nx=len(phiOld)
     phi = np.zeros((nt,nx))  #making matrix for n time steps and j spacial steps
     
     phi[0,:] = phiOld.copy()  #initial conditions for time step t=0
-    phi[1,:] = FTCS(phi[0:1], c, nt)  #initial conditions for t=1 using FTCS  
+    phi[1,:] = FTCS(phi[0,:], c, 1)  #initial conditions for t=1 using FTCS  
 
     
     for n in range(1, nt-1):
-        for j in range(1, nx-1):
-            phi[n+1,j] = phi[n-1,j] - c*(phi[n,j+1] - phi[n, j-1])
+        for j in range(nx):
+            phi[n+1,j] = phi[n-1,j] - c*(phi[n,(j+1)%nx] - phi[n, (j-1)%nx])
             
     return phi
     
