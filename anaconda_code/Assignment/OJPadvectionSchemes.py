@@ -16,9 +16,12 @@ def FTCS(phiOld, c, nt):
     for it in range(nt):
         # Loop through all space using remainder after division (%)
         # to cope with periodic boundary conditions
+        
         for j in range(nx):
             phi[j] = phiOld[j] - 0.5*c*\
                      (phiOld[(j+1)%nx] - phiOld[(j-1)%nx])
+                     
+            
         
         # update arrays for next time-step
         phiOld = phi.copy()
@@ -64,7 +67,8 @@ def CTCS(phiOld, c, nt):
 
 
 
-def LW(phiOld, c, nt, nx):
+def LW(phiOld, c, nt):
+    nx=len(phiOld)
     phi = phiOld.copy()
     phijplus = phiOld.copy()
     phijminus = phiOld.copy()

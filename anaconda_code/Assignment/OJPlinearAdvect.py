@@ -45,7 +45,7 @@ def main():
     phiFTCS = FTCS(phiOld, c, nt)
     phiFTBS = FTBS(phiOld, c, nt)
     phiCTCS = CTCS(phiOld, c, nt)
-    phiLW = LW(phiOld, c, nt, nx)
+    phiLW = LW(phiOld, c, nt)
     
     
     l2FTCS, errorFTCS = l2ErrorNorm(phiFTCS, phiAnalytic)
@@ -129,7 +129,7 @@ def convergence_exp():
         # Advect the profile using finite difference for all the time steps
         phiFTBS = FTBS(phiOld, c, nt)
         phiCTCS = CTCS(phiOld, c, nt)
-        phiLW = LW(phiOld, c, nt, nx)
+        phiLW = LW(phiOld, c, nt)
         
         ##create dx anmd dx^2 lines
         delta_x[i] = dx
@@ -191,7 +191,7 @@ def c_exp():
         phiFTCS = FTCS(phiOld, c, nt)
         phiFTBS = FTBS(phiOld, c, nt)
         phiCTCS = CTCS(phiOld, c, nt)
-        phiLW = LW(phiOld, c, nt, nx)
+        phiLW = LW(phiOld, c, nt)
         
         
         l2FTCS, errorFTCS = l2ErrorNorm(phiFTCS, phiAnalytic)
@@ -231,7 +231,69 @@ def c_exp():
         
 c_exp()
         
-
+def TV():
+    
+    # Parameters
+    xmin = 0
+    xmax = 1
+    nx = 100
+    nt = 100
+    u=0.4  ##wind speed, keeping constant
+    c = u*(nx/nt)
         
+    # Derived parameters
+    dx = (xmax - xmin)/nx
+    
+    # spatial points for plotting and for defining initial conditions
+    x = np.arange(xmin, xmax, dx)
+    
+    # Initial conditions
+    phiOld = cosBell(x, 0.25, 0.75)
+    # Exact solution is the initial condition shifted around the domain
+    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)
+    
+    TV_FTBS = np.zeros(nx-2)
+    TV_CTCS = np.zeros(nx-2)
+    TV_LW = np.zeros(nx-2)
+    phi_CTCS = np.zeros((nt,nx))
+    phiCTCS = np.zeros((1, nx))
+    for k in range(2,nt):  ##looping for each time step
+        
+        TVinter_FTBS = np.zeros(nt)
+        TVinter_CTCS = np.zeros(nt)
+        TVinter_LW = np.zeros(nt)
+        
+        phi_FTBS = FTBS(phiOld, c, k)
+        phi_CTCS = CTCS(phiOld, c, k)
+        phi_LW = LW(phiOld, c, k)
+        phiCTCS = phi_CTCS[k-2,:] 
+        
+        for i in range(nx):  ##loop for each spacial difference
+            
+            
+            
+            TVinter_FTBS[i] = abs( phi_FTBS[(i+1)%nx] - phi_FTBS[i] )
+            TVinter_CTCS[i] = abs( phiCTCS[(i+1)%nx] - phiCTCS[i] )
+            TVinter_LW[i] = abs( phi_LW[(i+1)%nx] - phi_LW[i] )
+            
+        TV_FTBS[k-2] = sum(TVinter_FTBS)
+        TV_CTCS[k-2] = sum(TVinter_CTCS)
+        TV_LW[k-2] = sum(TVinter_LW)
+        
+    
+    plt.figure()
+    plt.plot(TV_FTBS, label='FTBS', color='blue')
+    plt.plot(TV_CTCS, label='CTCS', color='green')
+    plt.plot(TV_LW, label='LW', color='orange')
+    plt.legend()
+TV()
+            
+        
+            
+            
+        
+        
+    
+    
         
         
