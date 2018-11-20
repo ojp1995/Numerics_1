@@ -27,7 +27,7 @@ def main():
     xmax = 1
     nx = 60
     nt = 60
-    u=0.4  ##wind speed, keeping constant
+    u=0.2  ##wind speed, keeping constant
     c = u*(nx/nt)
         
     # Derived parameters
@@ -39,7 +39,7 @@ def main():
     # Initial conditions
     phiOld = cosBell(x, 0.25, 0.75)
     # Exact solution is the initial condition shifted around the domain
-    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)#, 0.5, 0.75)
+    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)
     
     # Advect the profile using finite difference for all the time steps
     phiFTCS = FTCS(phiOld, c, nt)
@@ -72,6 +72,7 @@ def main():
     plt.legend()
     plt.xlabel('$x$')
     plt.ylabel('$\phi$')
+    plt.title('Advection of initial conditions')
     
     print("FTBS l2 error norm = ", l2FTBS)
     print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
@@ -92,7 +93,7 @@ def convergence_exp():
     "Experiment to test the convergence of methods as we increase the"
     "reolution"
     n_exp_size = 30  ##number of times we are increasing the spacial and time resolution 
-    u = 0.4  #constant wind speed
+    u = 0.2  #constant wind speed
     xmin = 0
     xmax = 1
     
@@ -165,7 +166,7 @@ convergence_exp()
     
         
 
-nx_list = (40, 80, 100, 120)  ##list of values to vary spacial step to vary c
+nx_list = (40, 160, 200, 240)  ##list of values to vary spacial step to vary c
 def c_exp():
     "Experiment to test the Von_Neumann stability analysis by varying the "
     "spacial steps to vary the courant number"
@@ -181,7 +182,7 @@ def c_exp():
         nx = nx_list[i]  ##varying number of spacial steps to vary c
         nt = 40  ##keeping spacial steps constant so c varys
         
-        u=0.4  ##wind speed constant
+        u=0.2  ##wind speed constant
         dx = (xmax - xmin)/nx
         c = u*(nx/nt)
         print(c)  ##printing the courant number each time to double check how it changes
@@ -218,7 +219,7 @@ def c_exp():
         plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
         plt.axhline(0, linestyle=':', color='black')
         plt.ylim([-0.2,1.4])  #increased y limiy to show where LW seems to be going wrong
-        plt.legend(bbox_to_anchor=(0.4,1))
+        plt.legend()
         plt.xlabel('$x$')
         plt.ylabel('$\phi$')
         plt.title('Linear Advection where c=%f'%c)
@@ -249,7 +250,7 @@ def TV():
     xmax = 1
     nx = 100
     nt = 100
-    u=0.4  ##wind speed, keeping constant
+    u=0.2  ##wind speed, keeping constant
     c = u*(nx/nt)
         
     ## Derived parameters
