@@ -71,6 +71,7 @@ def main():
     plt.ylim([-0.2,1.4])  #increased y limiy to show where LW seems to be going wrong
     plt.legend()
     plt.xlabel('$x$')
+    plt.ylabel('$\phi$')
     
     print("FTBS l2 error norm = ", l2FTBS)
     print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
@@ -82,13 +83,6 @@ def main():
      
     print("LW l2 error norm = ", l2LW)
     print("LW linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
-    ##error plot
-    plt.figure(5)
-    plt.clf()
-    plt.ion()
-    plt.plot(x, errorFTCS)
-    plt.title('error plot of FTCS method')
-    
 #            
 ####Run the function main defined in this file                      ###
             
@@ -117,6 +111,7 @@ def convergence_exp():
     delta_x = np.zeros(n_exp_size)
     delta_x2 = np.zeros(n_exp_size)
     
+    ##loop for increasing resolution
     for i in range(0,n_exp_size):
         nx = i*10 + 10  ##increasing spacial step
         dx = (xmax - xmin)/nx
@@ -138,16 +133,17 @@ def convergence_exp():
         phiCTCS = CTCS(phiOld, c, nt)
         phiLW = LW(phiOld, c, nt)
         
-        ##initialise dx anmd dx^2 lines for plot later
+        ##computing points for control lines 
         delta_x[i] = dx
         delta_x2[i] = dx**2       
         
-        ##calculating the l2error for each method for each 
+        ##calculating the l2error for each method
         l2FTBS_dx_err[i], errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
         l2CTCS_dx_err[i], errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
         l2LW_dx_err[i], errorLW = l2ErrorNorm(phiLW, phiAnalytic)
     
-    plt.figure(7, figsize=(10,7))
+    ##plotting l2 error against increase in dx on a loglog graph
+    plt.figure(2, figsize=(10,7))
     plt.clf()
     plt.loglog(dx_it, l2FTBS_dx_err, label='FTBS', color = 'red')
     plt.loglog(dx_it, l2CTCS_dx_err, label='CTCS', color = 'green')
@@ -157,7 +153,7 @@ def convergence_exp():
     plt.ylabel('$l_{2}$ error norm')
     plt.xlabel('Number of spacial steps')
     plt.legend()
-    plt.title('Loglog plot of error norms as number of spacial points increase')
+    plt.title('Loglog plot of error norms as of spacial points increase')
     
     
 convergence_exp()
@@ -169,7 +165,7 @@ convergence_exp()
     
         
 
-nx_list = (40, 80, 100, 120)  ##list of values to vary pacial step to vary c
+nx_list = (40, 80, 100, 120)  ##list of values to vary spacial step to vary c
 def c_exp():
     "Experiment to test the Von_Neumann stability analysis by varying the "
     "spacial steps to vary the courant number"
@@ -178,14 +174,14 @@ def c_exp():
     xmin = 0
     xmax = 1
     
-    
+    ##loop over the differnet sizes of spacial steps
     for i in range(len(nx_list)):
         
+         
+        nx = nx_list[i]  ##varying number of spacial steps to vary c
+        nt = 40  ##keeping spacial steps constant so c varys
         
-        nx = nx_list[i]
-        nt = 40
-        
-        u=0.4
+        u=0.4  ##wind speed constant
         dx = (xmax - xmin)/nx
         c = u*(nx/nt)
         print(c)  ##printing the courant number each time to double check how it changes
@@ -203,7 +199,7 @@ def c_exp():
         phiCTCS = CTCS(phiOld, c, nt)
         phiLW = LW(phiOld, c, nt)
         
-        
+        ##calculating the l2error norms  
         l2FTCS, errorFTCS = l2ErrorNorm(phiFTCS, phiAnalytic)
         l2FTBS, errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
         l2CTCS, errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
@@ -211,7 +207,7 @@ def c_exp():
         
         font = {'size'   : 20}
         plt.rc('font', **font)
-        plt.figure(i+2, figsize=(10,7))
+        plt.figure(i+3, figsize=(10,7))
         plt.clf()
         plt.ion()
         plt.plot(x, phiOld, label='Initial', color='black')
@@ -224,8 +220,11 @@ def c_exp():
         plt.ylim([-0.2,1.4])  #increased y limiy to show where LW seems to be going wrong
         plt.legend(bbox_to_anchor=(0.4,1))
         plt.xlabel('$x$')
+        plt.ylabel('$\phi$')
         plt.title('Linear Advection where c=%f'%c)
         
+        ##printing l2 and linf norm so we can see how error changes as we 
+        ##increase resolution 
         print("FTBS l2 error norm = ", l2FTBS)
         print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
         
@@ -242,8 +241,10 @@ def c_exp():
 c_exp()
         
 def TV():
+    "Experiment to test total variation of each method by computing the"
+    "variation at each time step"
     
-    # Parameters
+    ## Parameters
     xmin = 0
     xmax = 1
     nx = 100
@@ -251,13 +252,13 @@ def TV():
     u=0.4  ##wind speed, keeping constant
     c = u*(nx/nt)
         
-    # Derived parameters
+    ## Derived parameters
     dx = (xmax - xmin)/nx
     
-    # spatial points for plotting and for defining initial conditions
+    ## spatial points for plotting and for defining initial conditions
     x = np.arange(xmin, xmax, dx)
     
-    # Initial conditions
+    ## Initial conditions
     phiOld = cosBell(x, 0.25, 0.75)
     
     ##initialising vectors to store Vartiation for each time step
@@ -267,6 +268,7 @@ def TV():
     ##initialising for CTCS as used matrix method
     phi_CTCS = np.zeros((nt,nx))
     phiCTCS = np.zeros((1, nx))
+    
     for k in range(2,nt):  ##looping for each time step
         
         ##for each time step creating fresh zero vector spacial step variation
@@ -274,7 +276,7 @@ def TV():
         TVinter_CTCS = np.zeros(nt)
         TVinter_LW = np.zeros(nt)
         
-        
+        ##
         phi_FTBS = FTBS(phiOld, c, k)
         phi_CTCS = CTCS(phiOld, c, k)
         phi_LW = LW(phiOld, c, k)
@@ -283,23 +285,26 @@ def TV():
         for i in range(nx):  ##loop for each spacial difference
             
             
-            
+            ##computing difference between each spacial step for each method
             TVinter_FTBS[i] = abs( phi_FTBS[(i+1)%nx] - phi_FTBS[i] )
             TVinter_CTCS[i] = abs( phiCTCS[(i+1)%nx] - phiCTCS[i] )
             TVinter_LW[i] = abs( phi_LW[(i+1)%nx] - phi_LW[i] )
-            
+        
+        ##summing to find total variation for each timestep
         TV_FTBS[k-2] = sum(TVinter_FTBS)
         TV_CTCS[k-2] = sum(TVinter_CTCS)
         TV_LW[k-2] = sum(TVinter_LW)
         
-    
-    plt.figure(8)
+    ##plotting total variation against time 
+    plt.figure(7, figsize=(10,7))
     plt.clf()
     plt.plot(TV_FTBS, label='FTBS', color='blue')
     plt.plot(TV_CTCS, label='CTCS', color='green')
     plt.plot(TV_LW, label='LW', color='orange')
     plt.legend()
-    plt.title('Total Variation of Advection methods' )
+    plt.xlabel('time step')
+    plt.ylabel('Total Variation')
+    plt.title('Total Variation of Advection methods')
 TV()
             
         
