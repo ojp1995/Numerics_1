@@ -95,23 +95,30 @@ def main():
 main()
 
 def convergence_exp():
-    n_exp_size = 30
-    u = 0.4  #courant number constant
+    "Experiment to test the convergence of methods as we increase the"
+    "reolution"
+    n_exp_size = 30  ##number of times we are increasing the spacial and time resolution 
+    u = 0.4  #constant wind speed
     xmin = 0
     xmax = 1
+    
+    ##initialise error and l2error vectors for each of the methods
     l2FTBS_dx_err = np.zeros(n_exp_size)
     l2CTCS_dx_err = np.zeros(n_exp_size)
     l2LW_dx_err = np.zeros(n_exp_size)
     errorFTBS = np.zeros(n_exp_size)
     errorCTCS = np.zeros(n_exp_size)
     errorLW = np.zeros(n_exp_size)
+    
+    
     dx_it = np.zeros(n_exp_size)
     
+    ##initialise control lines for graph
     delta_x = np.zeros(n_exp_size)
     delta_x2 = np.zeros(n_exp_size)
     
     for i in range(0,n_exp_size):
-        nx = i*10 + 10
+        nx = i*10 + 10  ##increasing spacial step
         dx = (xmax - xmin)/nx
         nt = nx ##keeping overall time constant
         dx_it[i] = dx
@@ -124,17 +131,18 @@ def convergence_exp():
         # Initial conditions
         phiOld = cosBell(x, 0.25, 0.75)
         # Exact solution is the initial condition shifted around the domain
-        phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)#, 0.5, 0.75)
+        phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)
         
         # Advect the profile using finite difference for all the time steps
         phiFTBS = FTBS(phiOld, c, nt)
         phiCTCS = CTCS(phiOld, c, nt)
         phiLW = LW(phiOld, c, nt)
         
-        ##create dx anmd dx^2 lines
+        ##initialise dx anmd dx^2 lines for plot later
         delta_x[i] = dx
         delta_x2[i] = dx**2       
         
+        ##calculating the l2error for each method for each 
         l2FTBS_dx_err[i], errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
         l2CTCS_dx_err[i], errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
         l2LW_dx_err[i], errorLW = l2ErrorNorm(phiLW, phiAnalytic)
@@ -161,8 +169,10 @@ convergence_exp()
     
         
 
-nx_list = (40, 80, 100, 120)
+nx_list = (40, 80, 100, 120)  ##list of values to vary pacial step to vary c
 def c_exp():
+    "Experiment to test the Von_Neumann stability analysis by varying the "
+    "spacial steps to vary the courant number"
     
     # Parameters
     xmin = 0
@@ -178,7 +188,7 @@ def c_exp():
         u=0.4
         dx = (xmax - xmin)/nx
         c = u*(nx/nt)
-        print(c)
+        print(c)  ##printing the courant number each time to double check how it changes
         
         x = np.arange(xmin, xmax, dx)
     
@@ -249,19 +259,21 @@ def TV():
     
     # Initial conditions
     phiOld = cosBell(x, 0.25, 0.75)
-    # Exact solution is the initial condition shifted around the domain
-    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)
     
+    ##initialising vectors to store Vartiation for each time step
     TV_FTBS = np.zeros(nx-2)
     TV_CTCS = np.zeros(nx-2)
     TV_LW = np.zeros(nx-2)
+    ##initialising for CTCS as used matrix method
     phi_CTCS = np.zeros((nt,nx))
     phiCTCS = np.zeros((1, nx))
     for k in range(2,nt):  ##looping for each time step
         
+        ##for each time step creating fresh zero vector spacial step variation
         TVinter_FTBS = np.zeros(nt)
         TVinter_CTCS = np.zeros(nt)
         TVinter_LW = np.zeros(nt)
+        
         
         phi_FTBS = FTBS(phiOld, c, k)
         phi_CTCS = CTCS(phiOld, c, k)
@@ -281,11 +293,13 @@ def TV():
         TV_LW[k-2] = sum(TVinter_LW)
         
     
-    plt.figure()
+    plt.figure(8)
+    plt.clf()
     plt.plot(TV_FTBS, label='FTBS', color='blue')
     plt.plot(TV_CTCS, label='CTCS', color='green')
     plt.plot(TV_LW, label='LW', color='orange')
     plt.legend()
+    plt.title('Total Variation of Advection methods' )
 TV()
             
         
