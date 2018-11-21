@@ -13,81 +13,8 @@ from OJPinitialConditions import *
 from OJPadvectionSchemes import *
 from OJPdiagnostics import *
 
-### The main code is inside a function to avoid global variables    ###
 
 
-
- 
-def main():
-    "Advect the initial conditions using various advection schemes and"
-    "compare results"
-        
-    # Parameters
-    xmin = 0
-    xmax = 1
-    nx = 60
-    nt = 60
-    u=0.2  ##wind speed, keeping constant
-    c = u*(nx/nt)
-        
-    # Derived parameters
-    dx = (xmax - xmin)/nx
-    
-    # spatial points for plotting and for defining initial conditions
-    x = np.arange(xmin, xmax, dx)
-    
-    # Initial conditions
-    phiOld = cosBell(x, 0.25, 0.75)
-    # Exact solution is the initial condition shifted around the domain
-    phiAnalytic = cosBell((x - c*nt*dx)%(xmax - xmin), 0.25, 0.75)
-    
-    # Advect the profile using finite difference for all the time steps
-    phiFTCS = FTCS(phiOld, c, nt)
-    phiFTBS = FTBS(phiOld, c, nt)
-    phiCTCS = CTCS(phiOld, c, nt)
-    phiLW = LW(phiOld, c, nt)
-    
-    
-    l2FTCS, errorFTCS = l2ErrorNorm(phiFTCS, phiAnalytic)
-    l2FTBS, errorFTBS = l2ErrorNorm(phiFTBS, phiAnalytic)
-    l2CTCS, errorCTCS = l2ErrorNorm(phiCTCS[nt-1,:], phiAnalytic)
-    l2LW, errorLW = l2ErrorNorm(phiLW, phiAnalytic)
-    
-#    
-    
-    
-    font = {'size'   : 20}
-    plt.rc('font', **font)
-    plt.figure(1,figsize=(10,7))
-    plt.clf()
-    plt.ion()
-    plt.plot(x, phiOld, label='Initial', color='black')
-    plt.plot(x, phiAnalytic, label='Analytic', color='black', 
-             linestyle='--', linewidth=2)
-    plt.plot(x, phiFTBS, label='FTBS', color='red')
-    plt.plot(x, phiCTCS[nt-1,:], label='CTCS', color='green') #using second to last time step of t to plot
-    plt.plot(x, phiLW, label='Lax-Wendroff', color="orange")  #using second to last time step to plot
-    plt.axhline(0, linestyle=':', color='black')
-    plt.ylim([-0.2,1.4])  #increased y limiy to show where LW seems to be going wrong
-    plt.legend()
-    plt.xlabel('$x$')
-    plt.ylabel('$\phi$')
-    plt.title('Advection of initial conditions')
-    
-    print("FTBS l2 error norm = ", l2FTBS)
-    print("FTBS linf error norm = ", lInfErrorNorm(phiFTBS, phiAnalytic))
-    
-     
-    print("CTCS l2 error norm = ", l2CTCS)
-    print("CSCS linf error norm = ", lInfErrorNorm(phiCTCS, phiAnalytic))
-    
-     
-    print("LW l2 error norm = ", l2LW)
-    print("LW linf error norm = ", lInfErrorNorm(phiLW, phiAnalytic))
-#            
-####Run the function main defined in this file                      ###
-            
-main()
 
 def convergence_exp():
     "Experiment to test the convergence of methods as we increase the"
