@@ -71,7 +71,7 @@ def convergence_exp():
         l2LW_dx_err[i], errorLW = l2ErrorNorm(phiLW, phiAnalytic)
     
     ##plotting l2 error against increase in dx on a loglog graph
-    plt.figure(1, figsize=(10,7))
+    plt.figure(2, figsize=(10,7))
     plt.clf()
     plt.loglog(dx_it, l2FTBS_dx_err, label='FTBS', color = 'red')
     plt.loglog(dx_it, l2CTCS_dx_err, label='CTCS', color = 'green')
@@ -135,7 +135,7 @@ def c_exp():
         
         font = {'size'   : 20}
         plt.rc('font', **font)
-        plt.figure(i+2, figsize=(10,7))
+        plt.figure(i+3, figsize=(10,7))
         plt.clf()
         plt.ion()
         plt.plot(x, phiOld, label='Initial', color='black')
@@ -224,7 +224,7 @@ def TV():
         TV_LW[k-2] = sum(TVinter_LW)
         
     ##plotting total variation against time 
-    plt.figure(6, figsize=(10,7))
+    plt.figure(7, figsize=(10,7))
     plt.clf()
     plt.plot(TV_FTBS, label='FTBS', color='blue')
     plt.plot(TV_CTCS, label='CTCS', color='green')
